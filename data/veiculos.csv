@@ -1,0 +1,21 @@
+id_veiculo,tipo_veiculo,modelo,eletrico
+1001,eletrico,Básico,True
+1002,eletrico,Midiônibus,True
+1003,eletrico,Midiônibus,True
+1004,diesel,Miniônibus,False
+1005,diesel,Padron,False
+1006,eletrico,Básico,True
+1007,diesel,Biarticulado,False
+1008,diesel,Miniônibus,False
+1009,diesel,Articulado (23m),False
+1010,diesel,Biarticulado,False
+1011,diesel,Articulado (18m),False
+1012,eletrico,Básico,True
+1013,eletrico,Midiônibus,True
+1014,eletrico,Midiônibus,True
+1015,diesel,Articulado (18m),False
+1016,diesel,Miniônibus,False
+1017,eletrico,Biarticulado,True
+1018,diesel,Padron,False
+1019,eletrico,Midiônibus,True
+1020,eletrico,Miniônibus,True
