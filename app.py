@@ -5,8 +5,39 @@ import pydeck as pdk
 import time
 from utils.load_csv import load_csv
 
+
+
 # Layout
 st.set_page_config(layout="wide")
+
+
+
+# Sidebar
+with st.sidebar:
+ 
+    st.markdown("<h3 style='color: white;'>Sobre</h3>", unsafe_allow_html = True)
+ 
+    st.markdown("""<div style = 'text-align: justify; color: white;' >
+                    Este dashboard faz parte do projeto da Prefeitura Municipal de São Paulo com a Bloomberg.
+                    As visualizações apresentam informações sobre as frotas de ônibus, as emissões de poluentes e trajetórias em tempo real.
+                    </div> <br>""",
+                    unsafe_allow_html = True)
+ 
+    with st.expander("Metodologia"):
+ 
+        st.markdown("""<div style = 'text-align: justify; color: white;' >
+                    .
+                    </div> <br>""",
+                    unsafe_allow_html = True)
+       
+    with st.expander("Fonte"):
+ 
+        st.markdown("""<div style = 'text-align: justify; color: white;' >
+                    .
+                    </div> <br>""",
+                    unsafe_allow_html = True)
+
+
 
 # CSS para Header e Footer
 st.markdown("""
@@ -37,7 +68,7 @@ st.markdown("""
         bottom: 0;
         left: 0;
         width: 100%;
-        background-color: #0e1117;
+        background-color: #262730;
         color: white;
         text-align: center;
         padding: 10px;
@@ -52,16 +83,26 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# HEADER
+
+
+# Header
 st.markdown("""
 <div class="custom-header">
-    <h1 style='color: white; margin: 0;'>Dashboard - Ônibus elétricos</h1>
+    <h1 style='color: white; margin: 0;'>Dashboard - Protótipo</h1>
     <p style='font-size: 1.5rem; color: white; margin: 0;'>PMSP / Bloomberg</p>
 </div>
 """, unsafe_allow_html=True)
 
-# CONTEÚDO PRINCIPAL
+
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+
+
+# Conteúdo
 st.markdown('<div class="main-content">', unsafe_allow_html=True)
+
+
 
 # Carregar dados
 @st.cache_data
@@ -71,6 +112,8 @@ def carregar_dados():
     return df_final, df_trips
 
 df_final, df_trips = carregar_dados()
+
+
 
 # ----- GRÁFICO 1 -----
 st.markdown("## Sobre os ônibus")
@@ -94,8 +137,10 @@ fig1 = px.pie(
     hole=0.5
 )
 fig1.update_traces(textinfo="none", hovertemplate="%{percent}")
-fig1.add_annotation(text=f"<b>Total<br>{total_onibus}</b>", x=0.5, y=0.5, font_size=20, showarrow=False)
+fig1.add_annotation(text=f"<b>Total:<br>{total_onibus}</b>", x=0.5, y=0.5, font_size=20, showarrow=False)
 fig1.update_layout(legend=dict(orientation="v", font=dict(size=14), yanchor="middle", y=0.5, xanchor="left", x=1.05))
+
+
 
 # ----- GRÁFICO 2 -----
 onibus_eletricos = df_final[df_final["eletrico"]]
@@ -112,13 +157,19 @@ fig2 = px.pie(
     color_discrete_sequence=px.colors.qualitative.Plotly
 )
 fig2.update_traces(textinfo="none", hovertemplate="%{percent}")
-fig2.add_annotation(text=f"<b>Total<br>{total_onibus_eletricos}</b>", x=0.5, y=0.5, font_size=20, showarrow=False)
+fig2.add_annotation(text=f"<b>Total:<br>{total_onibus_eletricos}</b>", x=0.5, y=0.5, font_size=20, showarrow=False)
 fig2.update_layout(legend=dict(orientation="v", font=dict(size=14), yanchor="middle", y=0.5, xanchor="left", x=1.15))
 
 with st.expander("Clique para as visualizações"):
     col1, col2 = st.columns(2)
     col1.plotly_chart(fig1, use_container_width=True)
     col2.plotly_chart(fig2, use_container_width=True)
+
+
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+
 
 # ----- GRÁFICOS 3 -----
 st.markdown("## Sobre as emissões de CO₂")
@@ -148,16 +199,22 @@ with st.expander("Clique para as visualizações"):
     col1.plotly_chart(fig3, use_container_width=True)
     col2.plotly_chart(fig4, use_container_width=True)
 
+
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+
+
 # ----- MAPA -----
 st.markdown("## Mapa interativo")
 df_trips = df_trips[['coordinates', 'timestamps']]
 df_trips['coordinates'] = df_trips['coordinates'].apply(lambda x: eval(x))
 df_trips['timestamps'] = df_trips['timestamps'].apply(lambda x: eval(x))
-
+ 
 max_time = max(df_trips['timestamps'].apply(max))
 trail_length = 120  
 time_step = 60      
-frame_delay = 2  
+frame_delay = 1 
 
 map_placeholder = st.empty()
 current_time = 0
@@ -167,23 +224,27 @@ while current_time <= max_time:
         data=df_trips,
         get_path="coordinates",
         get_timestamps="timestamps",
-        get_color=[255, 0, 0], 
+        get_color=[255, 0, 0],
         opacity=0.8,
         width_min_pixels=5,
         rounded=True,
         trail_length=trail_length,
         current_time=current_time
     )
-    view_state = pdk.ViewState(latitude=-23.55, longitude=-46.57, zoom=11, pitch=45)
+    view_state = pdk.ViewState(latitude= -23.6, longitude= -46.63, zoom=11, pitch=45)
     r = pdk.Deck(layers=[trips_layer], initial_view_state=view_state)
     map_placeholder.pydeck_chart(r)
     current_time += time_step
     time.sleep(frame_delay)
 
+
+
 # Fechar div do conteúdo
 st.markdown('</div>', unsafe_allow_html=True)
 
-# FOOTER
+
+
+# Footer
 st.markdown("""
 <div class="footer">
     <img src="https://prefeitura.sp.gov.br/documents/34276/25188012/logo_PrefSP__horizontal_fundo+claro+%281%29.png">
