@@ -1,7 +1,7 @@
 id_veiculo,tipo_veiculo,modelo,eletrico
-1001,eletrico,Articulado (23m),True
-1002,diesel,Articulado (23m),False
-1003,diesel,Biarticulado,False
-1004,eletrico,Padron,True
-1005,diesel,Articulado (18m),False
-1006,eletrico,Miniônibus,True
+1001,eletrico,Miniônibus,True
+1002,eletrico,Midiônibus,True
+1003,diesel,Articulado (18m),False
+1004,diesel,Miniônibus,False
+1005,diesel,Miniônibus,False
+1006,diesel,Articulado (23m),False
