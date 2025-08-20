@@ -179,19 +179,19 @@ df_eletricos = df_final[df_final["eletrico"] == True]
 df_nao_eletricos = df_final[df_final["eletrico"] == False]
 
 emissoes = df_nao_eletricos.groupby("hora_min")["emissao_co2"].sum().cumsum().sort_index().reset_index()
-emissoes.columns = ["Horário do dia", "Emissões de CO₂ (kg)"]
+emissoes.columns = ["Horário do dia", "Emissões de CO₂ (?)"]
 
 emissoes_evitadas = df_eletricos.groupby("hora_min")["emissao_co2"].sum().cumsum().sort_index().reset_index()
-emissoes_evitadas.columns = ["Horário do dia", "Emissões de CO₂ (kg)"]
+emissoes_evitadas.columns = ["Horário do dia", "Emissões de CO₂ (?)"]
 
-fig3 = px.line(emissoes, x="Horário do dia", y="Emissões de CO₂ (kg)", markers=True,
+fig3 = px.line(emissoes, x="Horário do dia", y="Emissões de CO₂ (?)", markers=True,
                title="Emissões de CO₂ acumuladas ao longo do dia - ônibus não elétricos")
-fig3.update_traces(line_color="#d53e4f", hovertemplate="Emissões: %{y:.5f} kg<extra></extra>")
+fig3.update_traces(line_color="#d53e4f", hovertemplate="Emissões: %{y:.5f} ?<extra></extra>")
 fig3.update_layout(plot_bgcolor="white")
 
-fig4 = px.line(emissoes_evitadas, x="Horário do dia", y="Emissões de CO₂ (kg)", markers=True,
+fig4 = px.line(emissoes_evitadas, x="Horário do dia", y="Emissões de CO₂ (?)", markers=True,
                title="Emissões de CO₂ evitadas ao longo do dia - ônibus elétricos")
-fig4.update_traces(line_color="#00cc96", hovertemplate="Emissões: %{y:.5f} kg<extra></extra>")
+fig4.update_traces(line_color="#00cc96", hovertemplate="Emissões: %{y:.5f} ?<extra></extra>")
 fig4.update_layout(plot_bgcolor="white")
 
 with st.expander("Clique para as visualizações"):
