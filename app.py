@@ -16,22 +16,22 @@ st.set_page_config(layout="wide")
 
 # Sidebar
 with st.sidebar:
-    st.markdown("<h3 style='color: white;'>Sobre</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: black;'>Sobre</h3>", unsafe_allow_html=True)
 
-    st.markdown("""<div style = 'text-align: justify; color: white;' >
+    st.markdown("""<div style = 'text-align: justify; color: black;' >
                     Este dashboard faz parte do projeto da Prefeitura Municipal de São Paulo com a Bloomberg.
-                    As visualizações apresentam informações sobre as frotas de ônibus, as emissões de poluentes e trajetórias.
+                    As visualizações apresentam informações sobre o transporte público a ônibus como frotas, trajetos e emissões de poluentes.
                     </div> <br>""",
                 unsafe_allow_html=True)
 
     with st.expander("Metodologia"):
-        st.markdown("""<div style = 'text-align: justify; color: white;' >
+        st.markdown("""<div style = 'text-align: justify; color: black;' >
                     .
                     </div> <br>""",
                     unsafe_allow_html=True)
 
     with st.expander("Fonte"):
-        st.markdown("""<div style = 'text-align: justify; color: white;' >
+        st.markdown("""<div style = 'text-align: justify; color: black;' >
                     .
                     </div> <br>""",
                     unsafe_allow_html=True)
@@ -47,7 +47,7 @@ st.markdown("""
         top: 2.5rem;
         left: 0;
         width: 100%;
-        background-color: #0e1117;
+        background-color: #F1EBDD;
         z-index: 1000;
         padding: 1rem 0;
         box-shadow: 0 2px 5px rgba(0,0,0,0.3);
@@ -67,8 +67,8 @@ st.markdown("""
         bottom: 0;
         left: 0;
         width: 100%;
-        background-color: #262730;
-        color: white;
+        background-color: #F1EBDD;
+        color: black;
         text-align: center;
         padding: 10px;
         font-size: medium;
@@ -87,8 +87,8 @@ st.markdown("""
 # Header
 st.markdown("""
 <div class="custom-header">
-    <h1 style='color: white; margin: 0;'>Dashboard - Protótipo</h1>
-    <p style='font-size: 1.5rem; color: white; margin: 0;'>PMSP / Bloomberg</p>
+    <h1 style='color: black; margin: 0;'>Dashboard - Protótipo</h1>
+    <p style='font-size: 1.5rem; color: black; margin: 0;'>PMSP / Bloomberg</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -140,8 +140,9 @@ fig1 = px.pie(
     hole=0.5
 )
 fig1.update_traces(textinfo="none", hovertemplate="%{percent}")
-fig1.add_annotation(text=f"<b>Total:<br>{total_onibus}</b>", x=0.5, y=0.5, font_size=20, showarrow=False)
-fig1.update_layout(legend=dict(orientation="v", font=dict(size=14), yanchor="middle", y=0.5, xanchor="left", x=1.05))
+fig1.add_annotation(text=f"<b>Total:<br>{total_onibus}</b>", x=0.5, y=0.5, font=dict(size=20, color="black"), showarrow=False)
+fig1.update_layout(legend=dict(orientation="v", font=dict(size=14, color = "black"), yanchor="middle", y=0.5, xanchor="left", x=1.05), 
+                   hoverlabel=dict(font=dict(color="black"), bgcolor="white"))
 
 
 # Modelo de ônibus
@@ -159,8 +160,9 @@ fig2 = px.pie(
     color_discrete_sequence=px.colors.qualitative.Plotly
 )
 fig2.update_traces(textinfo="none", hovertemplate="%{percent}")
-fig2.add_annotation(text=f"<b>Total:<br>{total_onibus_eletricos}</b>", x=0.5, y=0.5, font_size=20, showarrow=False)
-fig2.update_layout(legend=dict(orientation="v", font=dict(size=14), yanchor="middle", y=0.5, xanchor="left", x=1.15))
+fig2.add_annotation(text=f"<b>Total:<br>{total_onibus_eletricos}</b>", x=0.5, y=0.5, font=dict(size=20, color="black"), showarrow=False)
+fig2.update_layout(legend=dict(orientation="v", font=dict(size=14, color = "black"), yanchor="middle", y=0.5, xanchor="left", x=1.15), 
+                   hoverlabel=dict(font=dict(color="black"), bgcolor="white"))
 
 with st.expander("Clique para as visualizações"):
     col1, col2 = st.columns(2)
@@ -190,15 +192,21 @@ emissoes_evitadas.columns = ["Horário do dia", "Emissões de CO₂ (?)"]
 # Emissões acumuladas
 fig3 = px.line(emissoes, x="Horário do dia", y="Emissões de CO₂ (?)", markers=True,
                title="Emissões de CO₂ acumuladas ao longo do dia - ônibus não elétricos")
-fig3.update_traces(line_color="#d53e4f", hovertemplate="Emissões: %{y:.5f} (?)<extra></extra>")
-fig3.update_layout(plot_bgcolor="white")
+fig3.update_traces(line_color="#d53e4f", hovertemplate="Emissões: %{y:.5f} (?)<extra></extra>",
+                   hoverlabel=dict(font_color="black", bgcolor="white"))
+fig3.update_layout(plot_bgcolor="white",
+                   xaxis=dict(title_font_color="black", tickfont_color="black"),
+                   yaxis=dict(title_font_color="black", tickfont_color="black"))
 
 
 # Emissões evitadas
 fig4 = px.line(emissoes_evitadas, x="Horário do dia", y="Emissões de CO₂ (?)", markers=True,
                title="Emissões de CO₂ evitadas ao longo do dia - ônibus elétricos")
-fig4.update_traces(line_color="#00cc96", hovertemplate="Emissões: %{y:.5f} (?)<extra></extra>")
-fig4.update_layout(plot_bgcolor="white")
+fig4.update_traces(line_color="#00cc96", hovertemplate="Emissões: %{y:.5f} (?)<extra></extra>",
+                   hoverlabel=dict(font_color="black", bgcolor="white"))
+fig4.update_layout(plot_bgcolor="white",
+                   xaxis=dict(title_font_color="black", tickfont_color="black"),
+                   yaxis=dict(title_font_color="black", tickfont_color="black"))
 
 with st.expander("Clique para as visualizações"):
     col1, col2 = st.columns(2)
@@ -257,9 +265,12 @@ with abas[0]:
             custom_data=custom_cols + ["distancia"]
         )
         fig_dist.update_traces(
-            hovertemplate="<b>Distrito</b>: %{customdata[0]}<br>Distância: %{customdata[1]:.0f} (?)<extra></extra>"
-        )
-        fig_dist.update_coloraxes(colorbar_title="Distância (?)", colorbar_title_side="right")
+            hovertemplate="<b>Distrito</b>: %{customdata[0]}<br>Distância: %{customdata[1]:.0f} (?)<extra></extra>",
+            hoverlabel=dict(font=dict(color="black"), bgcolor="white"
+        ))
+        fig_dist.update_coloraxes(colorbar_title="Distância (?)", colorbar_title_side="right",
+                                  colorbar_title_font=dict(color="black"),
+                                  colorbar_tickfont=dict(color="black"))
         fig_dist.update_layout(margin={"r":300,"t":0,"l":300,"b":0}, height=600)
         st.plotly_chart(fig_dist, use_container_width=True)
 
@@ -284,9 +295,12 @@ with abas[1]:
             custom_data=custom_cols + ["emissao_nao_eletricos"]
         )
         fig_nao.update_traces(
-            hovertemplate="<b>Distrito</b>: %{customdata[0]}<br>Emissão: %{customdata[1]:,.5f} (?)<extra></extra>"
-        )
-        fig_nao.update_coloraxes(colorbar_title="Emissão de CO₂ (?)", colorbar_title_side="right")
+            hovertemplate="<b>Distrito</b>: %{customdata[0]}<br>Emissão: %{customdata[1]:,.5f} (?)<extra></extra>",
+            hoverlabel=dict(font=dict(color="black"), bgcolor="white"
+        ))
+        fig_nao.update_coloraxes(colorbar_title="Emissão de CO₂ (?)", colorbar_title_side="right",
+                                 colorbar_title_font=dict(color="black"),
+                                 colorbar_tickfont=dict(color="black"))
         fig_nao.update_layout(margin={"r":300,"t":0,"l":300,"b":0}, height=600)
         st.plotly_chart(fig_nao, use_container_width=True)
 
@@ -311,9 +325,12 @@ with abas[2]:
             custom_data=custom_cols + ["emissao_eletricos"]
         )
         fig_ele.update_traces(
-            hovertemplate="<b>Distrito</b>: %{customdata[0]}<br>Emissão evitada: %{customdata[1]:,.5f} (?)<extra></extra>"
-        )
-        fig_ele.update_coloraxes(colorbar_title="Emissão de CO₂ evitada (?)", colorbar_title_side="right")
+            hovertemplate="<b>Distrito</b>: %{customdata[0]}<br>Emissão evitada: %{customdata[1]:,.5f} (?)<extra></extra>",
+            hoverlabel=dict(font=dict(color="black"), bgcolor="white"
+        ))
+        fig_ele.update_coloraxes(colorbar_title="Emissão de CO₂ evitada (?)", colorbar_title_side="right",
+                                 colorbar_title_font=dict(color="black"),
+                                 colorbar_tickfont=dict(color="black"))
         fig_ele.update_layout(margin={"r":300,"t":0,"l":300,"b":0}, height=600)
         st.plotly_chart(fig_ele, use_container_width=True)
 
@@ -323,8 +340,8 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 
 
-# ----- MAPA INTERATIVO -----
-st.markdown("## Mapa interativo")
+# ----- MAPA TRAJETOS -----
+st.markdown("## Mapa de trajeto dos ônibus")
 df_trips = df_trips[['coordinates', 'timestamps']]
 df_trips['coordinates'] = df_trips['coordinates'].apply(lambda x: eval(x))
 df_trips['timestamps'] = df_trips['timestamps'].apply(lambda x: eval(x))
@@ -334,26 +351,28 @@ trail_length = 300
 time_step = 80
 frame_delay = 2
 
-map_placeholder = st.empty()
-current_time = 0
-while current_time <= max_time:
-    trips_layer = pdk.Layer(
-        "TripsLayer",
-        data=df_trips,
-        get_path="coordinates",
-        get_timestamps="timestamps",
-        get_color=[255, 0, 0],
-        opacity=0.8,
-        width_min_pixels=5,
-        rounded=True,
-        trail_length=trail_length,
-        current_time=current_time,
-    )
-    view_state = pdk.ViewState(latitude=-23.6, longitude=-46.63, zoom=11, pitch=45)
-    r = pdk.Deck(layers=[trips_layer], initial_view_state=view_state)
-    map_placeholder.pydeck_chart(r, height=600)
-    current_time += time_step
-    time.sleep(frame_delay)
+col_left, col_center, col_right = st.columns([1, 5, 1]) 
+with col_center:
+    map_placeholder = st.empty()
+    current_time = 0
+    while current_time <= max_time:
+        trips_layer = pdk.Layer(
+            "TripsLayer",
+            data=df_trips,
+            get_path="coordinates",
+            get_timestamps="timestamps",
+            get_color=[255, 0, 0],
+            opacity=0.8,
+            width_min_pixels=5,
+            rounded=True,
+            trail_length=trail_length,
+            current_time=current_time,
+        )
+        view_state = pdk.ViewState(latitude=-23.6, longitude=-46.63, zoom=11, pitch=45)
+        r = pdk.Deck(layers=[trips_layer], initial_view_state=view_state, map_style="mapbox://styles/mapbox/light-v11")
+        map_placeholder.pydeck_chart(r, height=600)
+        current_time += time_step
+        time.sleep(frame_delay)
 
 
 
