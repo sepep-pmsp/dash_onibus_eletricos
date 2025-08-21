@@ -3,7 +3,9 @@ import pandas as pd
 import plotly.express as px
 import pydeck as pdk
 import time
+import numpy as np
 from utils.load_csv import load_csv
+from utils.load_shp import load_shp
 
 
 
@@ -14,28 +16,25 @@ st.set_page_config(layout="wide")
 
 # Sidebar
 with st.sidebar:
- 
-    st.markdown("<h3 style='color: white;'>Sobre</h3>", unsafe_allow_html = True)
- 
+    st.markdown("<h3 style='color: white;'>Sobre</h3>", unsafe_allow_html=True)
+
     st.markdown("""<div style = 'text-align: justify; color: white;' >
                     Este dashboard faz parte do projeto da Prefeitura Municipal de São Paulo com a Bloomberg.
-                    As visualizações apresentam informações sobre as frotas de ônibus, as emissões de poluentes e trajetórias em tempo real.
+                    As visualizações apresentam informações sobre as frotas de ônibus, as emissões de poluentes e trajetórias.
                     </div> <br>""",
-                    unsafe_allow_html = True)
- 
+                unsafe_allow_html=True)
+
     with st.expander("Metodologia"):
- 
         st.markdown("""<div style = 'text-align: justify; color: white;' >
                     .
                     </div> <br>""",
-                    unsafe_allow_html = True)
-       
+                    unsafe_allow_html=True)
+
     with st.expander("Fonte"):
- 
         st.markdown("""<div style = 'text-align: justify; color: white;' >
                     .
                     </div> <br>""",
-                    unsafe_allow_html = True)
+                    unsafe_allow_html=True)
 
 
 
@@ -109,14 +108,18 @@ st.markdown('<div class="main-content">', unsafe_allow_html=True)
 def carregar_dados():
     df_final = load_csv("df_final.csv")
     df_trips = load_csv("df_trips.csv")
-    return df_final, df_trips
+    distritos_final = load_shp("distritos_final.shp")
+    return df_final, df_trips, distritos_final
 
-df_final, df_trips = carregar_dados()
+df_final, df_trips, distritos_final = carregar_dados()
 
 
 
-# ----- GRÁFICO 1 -----
+# ----- GRÁFICOS 1 -----
 st.markdown("## Sobre os ônibus")
+
+
+# Tipo de ônibus
 df_final["eletrico"] = df_final["eletrico"].astype(bool)
 contagem_eletrico = df_final["eletrico"].value_counts().reset_index()
 contagem_eletrico.columns = ["Tipo de ônibus", "Quantidade"]
@@ -141,8 +144,7 @@ fig1.add_annotation(text=f"<b>Total:<br>{total_onibus}</b>", x=0.5, y=0.5, font_
 fig1.update_layout(legend=dict(orientation="v", font=dict(size=14), yanchor="middle", y=0.5, xanchor="left", x=1.05))
 
 
-
-# ----- GRÁFICO 2 -----
+# Modelo de ônibus
 onibus_eletricos = df_final[df_final["eletrico"]]
 contagem_modelo = onibus_eletricos["modelo"].value_counts().reset_index()
 contagem_modelo.columns = ["Modelo de ônibus", "Quantidade"]
@@ -171,7 +173,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 
 
-# ----- GRÁFICOS 3 -----
+# ----- GRÁFICOS 2 -----
 st.markdown("## Sobre as emissões de CO₂")
 df_final["momento_inicial"] = pd.to_datetime(df_final["momento_inicial"])
 df_final["hora_min"] = df_final["momento_inicial"].dt.strftime("%H:%M")
@@ -184,14 +186,18 @@ emissoes.columns = ["Horário do dia", "Emissões de CO₂ (?)"]
 emissoes_evitadas = df_eletricos.groupby("hora_min")["emissao_co2"].sum().cumsum().sort_index().reset_index()
 emissoes_evitadas.columns = ["Horário do dia", "Emissões de CO₂ (?)"]
 
+
+# Emissões acumuladas
 fig3 = px.line(emissoes, x="Horário do dia", y="Emissões de CO₂ (?)", markers=True,
                title="Emissões de CO₂ acumuladas ao longo do dia - ônibus não elétricos")
-fig3.update_traces(line_color="#d53e4f", hovertemplate="Emissões: %{y:.5f} ?<extra></extra>")
+fig3.update_traces(line_color="#d53e4f", hovertemplate="Emissões: %{y:.5f} (?)<extra></extra>")
 fig3.update_layout(plot_bgcolor="white")
 
+
+# Emissões evitadas
 fig4 = px.line(emissoes_evitadas, x="Horário do dia", y="Emissões de CO₂ (?)", markers=True,
                title="Emissões de CO₂ evitadas ao longo do dia - ônibus elétricos")
-fig4.update_traces(line_color="#00cc96", hovertemplate="Emissões: %{y:.5f} ?<extra></extra>")
+fig4.update_traces(line_color="#00cc96", hovertemplate="Emissões: %{y:.5f} (?)<extra></extra>")
 fig4.update_layout(plot_bgcolor="white")
 
 with st.expander("Clique para as visualizações"):
@@ -205,16 +211,128 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 
 
-# ----- MAPA -----
+# ----- MAPAS POR DISTRITO -----
+st.markdown("## Mapas coropléticos por distrito")
+
+distritos_final["emissao_nao_eletricos"] = np.where(
+    distritos_final["eletrico"] == "False",
+    distritos_final["emissao_co"],
+    0
+)
+
+distritos_final["emissao_eletricos"] = np.where(
+    distritos_final["eletrico"] == "True",
+    distritos_final["emissao_co"],
+    0
+)
+
+distritos_final = distritos_final.to_crs(epsg=4326)
+
+abas = st.tabs([
+    "Distância percorrida", 
+    "Emissão de CO₂ - ônibus não elétricos", 
+    "Emissão de CO₂ evitada - ônibus elétricos"
+])
+
+custom_cols = ["nm_distrit"]
+
+
+# Distância
+with abas[0]:
+    with st.expander("Clique para a visualização"):
+        fig_dist = px.choropleth_mapbox(
+            distritos_final,
+            geojson=distritos_final.geometry.__geo_interface__,
+            locations=distritos_final.index,
+            color="distancia",
+            color_continuous_scale="Blues",
+            range_color=[
+                distritos_final["distancia"].min(),
+                distritos_final["distancia"].max()
+            ],
+            mapbox_style="carto-positron",
+            center={"lat": -23.7, "lon": -46.63},
+            zoom=9,
+            opacity=0.8,
+            custom_data=custom_cols + ["distancia"]
+        )
+        fig_dist.update_traces(
+            hovertemplate="<b>Distrito</b>: %{customdata[0]}<br>Distância: %{customdata[1]:.0f} (?)<extra></extra>"
+        )
+        fig_dist.update_coloraxes(colorbar_title="Distância (?)", colorbar_title_side="right")
+        fig_dist.update_layout(margin={"r":300,"t":0,"l":300,"b":0}, height=600)
+        st.plotly_chart(fig_dist, use_container_width=True)
+
+
+# Emissão não elétricos
+with abas[1]:
+    with st.expander("Clique para a visualização"):
+        fig_nao = px.choropleth_mapbox(
+            distritos_final,
+            geojson=distritos_final.geometry.__geo_interface__,
+            locations=distritos_final.index,
+            color="emissao_nao_eletricos",
+            color_continuous_scale="Reds",
+            range_color=[
+                distritos_final["emissao_nao_eletricos"].min(),
+                distritos_final["emissao_nao_eletricos"].max()
+            ],
+            mapbox_style="carto-positron",
+            center={"lat": -23.7, "lon": -46.63},
+            zoom=9,
+            opacity=0.8,
+            custom_data=custom_cols + ["emissao_nao_eletricos"]
+        )
+        fig_nao.update_traces(
+            hovertemplate="<b>Distrito</b>: %{customdata[0]}<br>Emissão: %{customdata[1]:,.5f} (?)<extra></extra>"
+        )
+        fig_nao.update_coloraxes(colorbar_title="Emissão de CO₂ (?)", colorbar_title_side="right")
+        fig_nao.update_layout(margin={"r":300,"t":0,"l":300,"b":0}, height=600)
+        st.plotly_chart(fig_nao, use_container_width=True)
+
+
+# Emissão elétricos
+with abas[2]:
+    with st.expander("Clique para a visualização"):
+        fig_ele = px.choropleth_mapbox(
+            distritos_final,
+            geojson=distritos_final.geometry.__geo_interface__,
+            locations=distritos_final.index,
+            color="emissao_eletricos",
+            color_continuous_scale="Greens",
+            range_color=[
+                distritos_final["emissao_eletricos"].min(),
+                distritos_final["emissao_eletricos"].max()
+            ],
+            mapbox_style="carto-positron",
+            center={"lat": -23.7, "lon": -46.63},
+            zoom=9,
+            opacity=0.8,
+            custom_data=custom_cols + ["emissao_eletricos"]
+        )
+        fig_ele.update_traces(
+            hovertemplate="<b>Distrito</b>: %{customdata[0]}<br>Emissão evitada: %{customdata[1]:,.5f} (?)<extra></extra>"
+        )
+        fig_ele.update_coloraxes(colorbar_title="Emissão de CO₂ evitada (?)", colorbar_title_side="right")
+        fig_ele.update_layout(margin={"r":300,"t":0,"l":300,"b":0}, height=600)
+        st.plotly_chart(fig_ele, use_container_width=True)
+
+
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+
+
+# ----- MAPA INTERATIVO -----
 st.markdown("## Mapa interativo")
 df_trips = df_trips[['coordinates', 'timestamps']]
 df_trips['coordinates'] = df_trips['coordinates'].apply(lambda x: eval(x))
 df_trips['timestamps'] = df_trips['timestamps'].apply(lambda x: eval(x))
- 
+
 max_time = max(df_trips['timestamps'].apply(max))
-trail_length = 120  
-time_step = 60      
-frame_delay = 1 
+trail_length = 300
+time_step = 80
+frame_delay = 2
 
 map_placeholder = st.empty()
 current_time = 0
@@ -229,17 +347,16 @@ while current_time <= max_time:
         width_min_pixels=5,
         rounded=True,
         trail_length=trail_length,
-        current_time=current_time
+        current_time=current_time,
     )
-    view_state = pdk.ViewState(latitude= -23.6, longitude= -46.63, zoom=11, pitch=45)
+    view_state = pdk.ViewState(latitude=-23.6, longitude=-46.63, zoom=11, pitch=45)
     r = pdk.Deck(layers=[trips_layer], initial_view_state=view_state)
-    map_placeholder.pydeck_chart(r)
+    map_placeholder.pydeck_chart(r, height=600)
     current_time += time_step
     time.sleep(frame_delay)
 
 
 
-# Fechar div do conteúdo
 st.markdown('</div>', unsafe_allow_html=True)
 
 
