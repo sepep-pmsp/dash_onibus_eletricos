@@ -27,19 +27,19 @@ with st.sidebar:
  
     with st.expander("Metodologia"):
         st_mermaid("""
-        %%{ init: {
-            'theme': 'base',
-            'themeVariables': {
-                'fontSize': '20px',
-                'primaryColor': '#F1EBDD'}}}%%
+%%{ init: {
+    'theme': 'base',
+    'themeVariables': {
+        'fontSize': '20px',
+        'primaryColor': '#F1EBDD'}}}%%
        
-    flowchart TD
-    A[Extração dos limites<br/>administrativos<br/>dos distritos<br/>da cidade] --> B[Simulação dos dados<br/>da API do Olho Vivo]
-    B --> C[Tratamento dos dados]
-    C --> D[Cálculo das emissões<br/>de poluentes<br/>e da distância percorrida<br/>por ônibus]
-    D --> E[Agregação dos dados<br/>por distrito]
-    E --> F[Visualização dos dados]
-    F --> G[Elaboração do dashboard<br/>interativo]""", height=540, width=170)
+flowchart TD
+A[Extração dos limites<br/>administrativos<br/>dos distritos<br/>da cidade] --> B[Simulação dos dados<br/>da API do Olho Vivo]
+B --> C[Tratamento dos dados]
+C --> D[Cálculo das emissões<br/>de poluentes<br/>e da distância percorrida<br/>por ônibus]
+D --> E[Agregação dos dados<br/>por distrito]
+E --> F[Visualização dos dados]
+F --> G[Elaboração do dashboard<br/>interativo]""", height=540, width=170)
  
     with st.expander("Fonte"):
         st.markdown("""<div style = 'text-align: justify; color: black;' >
