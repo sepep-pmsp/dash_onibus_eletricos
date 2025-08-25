@@ -4,6 +4,7 @@ import plotly.express as px
 import pydeck as pdk
 import time
 import numpy as np
+from streamlit_mermaid import st_mermaid
 from utils.load_csv import load_csv
 from utils.load_shp import load_shp
 
@@ -25,14 +26,16 @@ with st.sidebar:
                 unsafe_allow_html=True)
 
     with st.expander("Metodologia"):
-        st.markdown("""<div style = 'text-align: justify; color: black;' >
-                    .
-                    </div> <br>""",
-                    unsafe_allow_html=True)
+        st_mermaid("""flowchart TD
+                   A[Extração dos limites<br/>administrativos dos distritos da cidade] --> B[Simulação dos dados<br/>da API do Olho Vivo]
+                   B --> C[Cálculo das emissões de poluentes<br/>e distância percorrida por ônibus]
+                   C --> D[Agregação dos dados por distrito]
+                   D --> E[Visualização dos dados]
+                   E --> F[Elaboração do dashboard interativo]""")
 
     with st.expander("Fonte"):
         st.markdown("""<div style = 'text-align: justify; color: black;' >
-                    .
+                    SPTrans - API do Olho Vivo, 2025.
                     </div> <br>""",
                     unsafe_allow_html=True)
 
@@ -347,7 +350,7 @@ df_trips['coordinates'] = df_trips['coordinates'].apply(lambda x: eval(x))
 df_trips['timestamps'] = df_trips['timestamps'].apply(lambda x: eval(x))
 
 max_time = max(df_trips['timestamps'].apply(max))
-trail_length = 300
+trail_length = 800
 time_step = 80
 frame_delay = 2
 
