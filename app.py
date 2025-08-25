@@ -7,40 +7,48 @@ import numpy as np
 from streamlit_mermaid import st_mermaid
 from utils.load_csv import load_csv
 from utils.load_shp import load_shp
+ 
 
-
-
+ 
 # Layout
 st.set_page_config(layout="wide")
-
-
-
+ 
+ 
+ 
 # Sidebar
 with st.sidebar:
     st.markdown("<h3 style='color: black;'>Sobre</h3>", unsafe_allow_html=True)
-
+ 
     st.markdown("""<div style = 'text-align: justify; color: black;' >
                     Este dashboard faz parte do projeto da Prefeitura Municipal de São Paulo com a Bloomberg.
                     As visualizações apresentam informações sobre o transporte público a ônibus como frotas, trajetos e emissões de poluentes.
                     </div> <br>""",
                 unsafe_allow_html=True)
-
+ 
     with st.expander("Metodologia"):
-        st_mermaid("""flowchart TD
-                   A[Extração dos limites<br/>administrativos dos distritos da cidade] --> B[Simulação dos dados<br/>da API do Olho Vivo]
-                   B --> C[Cálculo das emissões de poluentes<br/>e distância percorrida por ônibus]
-                   C --> D[Agregação dos dados por distrito]
-                   D --> E[Visualização dos dados]
-                   E --> F[Elaboração do dashboard interativo]""")
-
+        st_mermaid("""
+        %%{ init: {
+            'theme': 'base',
+            'themeVariables': {
+                'fontSize': '20px',
+                'primaryColor': '#F1EBDD'}}}%%
+       
+flowchart TD
+A[Extração dos limites<br/>administrativos<br/>dos distritos<br/>da cidade] --> B[Simulação dos dados<br/>da API do Olho Vivo]
+B --> C[Tratamento dos dados]
+C --> D[Cálculo das emissões<br/>de poluentes<br/>e da distância percorrida<br/>por ônibus]
+D --> E[Agregação dos dados<br/>por distrito]
+E --> F[Visualização dos dados]
+F --> G[Elaboração do dashboard<br/>interativo]""", height=540, width=170)
+ 
     with st.expander("Fonte"):
         st.markdown("""<div style = 'text-align: justify; color: black;' >
                     SPTrans - API do Olho Vivo, 2025.
                     </div> <br>""",
                     unsafe_allow_html=True)
-
-
-
+ 
+ 
+ 
 # CSS para Header e Footer
 st.markdown("""
 <style>
@@ -56,14 +64,14 @@ st.markdown("""
         box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         text-align: center;
     }
-
+ 
     /* Compensar espaço do header no conteúdo */
     .main-content {
         padding-top: 6rem;
         padding-left: 2rem;
         padding-right: 2rem;
     }
-
+ 
     /* FOOTER FIXO */
     .footer {
         position: fixed;
@@ -84,9 +92,9 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
-
-
+ 
+ 
+ 
 # Header
 st.markdown("""
 <div class="custom-header">
@@ -94,18 +102,18 @@ st.markdown("""
     <p style='font-size: 1.5rem; color: black; margin: 0;'>PMSP / Bloomberg</p>
 </div>
 """, unsafe_allow_html=True)
-
-
-
+ 
+ 
+ 
 st.markdown("<br>", unsafe_allow_html=True)
-
-
-
+ 
+ 
+ 
 # Conteúdo
 st.markdown('<div class="main-content">', unsafe_allow_html=True)
-
-
-
+ 
+ 
+ 
 # Carregar dados
 @st.cache_data
 def carregar_dados():
@@ -113,15 +121,15 @@ def carregar_dados():
     df_trips = load_csv("df_trips.csv")
     distritos_final = load_shp("distritos_final.shp")
     return df_final, df_trips, distritos_final
-
+ 
 df_final, df_trips, distritos_final = carregar_dados()
-
-
-
+ 
+ 
+ 
 # ----- GRÁFICOS 1 -----
 st.markdown("## Sobre os ônibus")
-
-
+ 
+ 
 # Tipo de ônibus
 df_final["eletrico"] = df_final["eletrico"].astype(bool)
 contagem_eletrico = df_final["eletrico"].value_counts().reset_index()
@@ -129,7 +137,7 @@ contagem_eletrico.columns = ["Tipo de ônibus", "Quantidade"]
 mapeamento = {False: "Não elétrico", True: "Elétrico"}
 contagem_eletrico["Tipo de ônibus"] = contagem_eletrico["Tipo de ônibus"].map(mapeamento)
 total_onibus = df_final["id_onibus"].nunique()
-
+ 
 fig1 = px.pie(
     contagem_eletrico,
     values="Quantidade",
@@ -144,16 +152,16 @@ fig1 = px.pie(
 )
 fig1.update_traces(textinfo="none", hovertemplate="%{percent}")
 fig1.add_annotation(text=f"<b>Total:<br>{total_onibus}</b>", x=0.5, y=0.5, font=dict(size=20, color="black"), showarrow=False)
-fig1.update_layout(legend=dict(orientation="v", font=dict(size=14, color = "black"), yanchor="middle", y=0.5, xanchor="left", x=1.05), 
+fig1.update_layout(legend=dict(orientation="v", font=dict(size=14, color = "black"), yanchor="middle", y=0.5, xanchor="left", x=1.05),
                    hoverlabel=dict(font=dict(color="black"), bgcolor="white"))
-
-
+ 
+ 
 # Modelo de ônibus
 onibus_eletricos = df_final[df_final["eletrico"]]
 contagem_modelo = onibus_eletricos["modelo"].value_counts().reset_index()
 contagem_modelo.columns = ["Modelo de ônibus", "Quantidade"]
 total_onibus_eletricos = onibus_eletricos["id_onibus"].nunique()
-
+ 
 fig2 = px.pie(
     contagem_modelo,
     values="Quantidade",
@@ -164,34 +172,34 @@ fig2 = px.pie(
 )
 fig2.update_traces(textinfo="none", hovertemplate="%{percent}")
 fig2.add_annotation(text=f"<b>Total:<br>{total_onibus_eletricos}</b>", x=0.5, y=0.5, font=dict(size=20, color="black"), showarrow=False)
-fig2.update_layout(legend=dict(orientation="v", font=dict(size=14, color = "black"), yanchor="middle", y=0.5, xanchor="left", x=1.15), 
+fig2.update_layout(legend=dict(orientation="v", font=dict(size=14, color = "black"), yanchor="middle", y=0.5, xanchor="left", x=1.15),
                    hoverlabel=dict(font=dict(color="black"), bgcolor="white"))
-
+ 
 with st.expander("Clique para as visualizações"):
     col1, col2 = st.columns(2)
     col1.plotly_chart(fig1, use_container_width=True)
     col2.plotly_chart(fig2, use_container_width=True)
-
-
-
+ 
+ 
+ 
 st.markdown("<br>", unsafe_allow_html=True)
-
-
-
+ 
+ 
+ 
 # ----- GRÁFICOS 2 -----
 st.markdown("## Sobre as emissões de CO₂")
 df_final["momento_inicial"] = pd.to_datetime(df_final["momento_inicial"])
 df_final["hora_min"] = df_final["momento_inicial"].dt.strftime("%H:%M")
 df_eletricos = df_final[df_final["eletrico"] == True]
 df_nao_eletricos = df_final[df_final["eletrico"] == False]
-
+ 
 emissoes = df_nao_eletricos.groupby("hora_min")["emissao_co2"].sum().cumsum().sort_index().reset_index()
 emissoes.columns = ["Horário do dia", "Emissões de CO₂ (?)"]
-
+ 
 emissoes_evitadas = df_eletricos.groupby("hora_min")["emissao_co2"].sum().cumsum().sort_index().reset_index()
 emissoes_evitadas.columns = ["Horário do dia", "Emissões de CO₂ (?)"]
-
-
+ 
+ 
 # Emissões acumuladas
 fig3 = px.line(emissoes, x="Horário do dia", y="Emissões de CO₂ (?)", markers=True,
                title="Emissões de CO₂ acumuladas ao longo do dia - ônibus não elétricos")
@@ -200,8 +208,8 @@ fig3.update_traces(line_color="#d53e4f", hovertemplate="Emissões: %{y:.5f} (?)<
 fig3.update_layout(plot_bgcolor="white",
                    xaxis=dict(title_font_color="black", tickfont_color="black"),
                    yaxis=dict(title_font_color="black", tickfont_color="black"))
-
-
+ 
+ 
 # Emissões evitadas
 fig4 = px.line(emissoes_evitadas, x="Horário do dia", y="Emissões de CO₂ (?)", markers=True,
                title="Emissões de CO₂ evitadas ao longo do dia - ônibus elétricos")
@@ -210,44 +218,44 @@ fig4.update_traces(line_color="#00cc96", hovertemplate="Emissões: %{y:.5f} (?)<
 fig4.update_layout(plot_bgcolor="white",
                    xaxis=dict(title_font_color="black", tickfont_color="black"),
                    yaxis=dict(title_font_color="black", tickfont_color="black"))
-
+ 
 with st.expander("Clique para as visualizações"):
     col1, col2 = st.columns(2)
     col1.plotly_chart(fig3, use_container_width=True)
     col2.plotly_chart(fig4, use_container_width=True)
-
-
-
+ 
+ 
+ 
 st.markdown("<br>", unsafe_allow_html=True)
-
-
-
+ 
+ 
+ 
 # ----- MAPAS POR DISTRITO -----
 st.markdown("## Mapas coropléticos por distrito")
-
+ 
 distritos_final["emissao_nao_eletricos"] = np.where(
     distritos_final["eletrico"] == "False",
     distritos_final["emissao_co"],
     0
 )
-
+ 
 distritos_final["emissao_eletricos"] = np.where(
     distritos_final["eletrico"] == "True",
     distritos_final["emissao_co"],
     0
 )
-
+ 
 distritos_final = distritos_final.to_crs(epsg=4326)
-
+ 
 abas = st.tabs([
-    "Distância percorrida", 
-    "Emissão de CO₂ - ônibus não elétricos", 
+    "Distância percorrida",
+    "Emissão de CO₂ - ônibus não elétricos",
     "Emissão de CO₂ evitada - ônibus elétricos"
 ])
-
+ 
 custom_cols = ["nm_distrit"]
-
-
+ 
+ 
 # Distância
 with abas[0]:
     with st.expander("Clique para a visualização"):
@@ -276,8 +284,8 @@ with abas[0]:
                                   colorbar_tickfont=dict(color="black"))
         fig_dist.update_layout(margin={"r":300,"t":0,"l":300,"b":0}, height=600)
         st.plotly_chart(fig_dist, use_container_width=True)
-
-
+ 
+ 
 # Emissão não elétricos
 with abas[1]:
     with st.expander("Clique para a visualização"):
@@ -306,8 +314,8 @@ with abas[1]:
                                  colorbar_tickfont=dict(color="black"))
         fig_nao.update_layout(margin={"r":300,"t":0,"l":300,"b":0}, height=600)
         st.plotly_chart(fig_nao, use_container_width=True)
-
-
+ 
+ 
 # Emissão elétricos
 with abas[2]:
     with st.expander("Clique para a visualização"):
@@ -336,25 +344,25 @@ with abas[2]:
                                  colorbar_tickfont=dict(color="black"))
         fig_ele.update_layout(margin={"r":300,"t":0,"l":300,"b":0}, height=600)
         st.plotly_chart(fig_ele, use_container_width=True)
-
-
-
+ 
+ 
+ 
 st.markdown("<br>", unsafe_allow_html=True)
-
-
-
+ 
+ 
+ 
 # ----- MAPA TRAJETOS -----
 st.markdown("## Mapa de trajeto dos ônibus")
 df_trips = df_trips[['coordinates', 'timestamps']]
 df_trips['coordinates'] = df_trips['coordinates'].apply(lambda x: eval(x))
 df_trips['timestamps'] = df_trips['timestamps'].apply(lambda x: eval(x))
-
+ 
 max_time = max(df_trips['timestamps'].apply(max))
 trail_length = 800
 time_step = 80
 frame_delay = 2
-
-col_left, col_center, col_right = st.columns([1, 5, 1]) 
+ 
+col_left, col_center, col_right = st.columns([1, 5, 1])
 with col_center:
     map_placeholder = st.empty()
     current_time = 0
@@ -376,13 +384,13 @@ with col_center:
         map_placeholder.pydeck_chart(r, height=600)
         current_time += time_step
         time.sleep(frame_delay)
-
-
-
+ 
+ 
+ 
 st.markdown('</div>', unsafe_allow_html=True)
-
-
-
+ 
+ 
+ 
 # Footer
 st.markdown("""
 <div class="footer">
