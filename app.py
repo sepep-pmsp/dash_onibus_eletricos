@@ -25,21 +25,23 @@ with st.sidebar:
                     </div> <br>""",
                 unsafe_allow_html=True)
  
+    #st.markdown("<h3 style='color: black;'>Metodologia</h3>", unsafe_allow_html=True)
     with st.expander("Metodologia"):
         st_mermaid("""
-        %%{ init: {
-            'theme': 'base',
-            'themeVariables': {
-                'fontSize': '20px',
-                'primaryColor': '#F1EBDD'}}}%%
-       
+%%{ init: {
+    'theme': 'base',
+    'themeVariables': {
+        'fontSize': '20px',
+        'primaryColor': '#F1EBDD'}}}%%
+                
 flowchart TD
 A[Extração dos limites<br/>administrativos<br/>dos distritos<br/>da cidade] --> B[Simulação dos dados<br/>da API do Olho Vivo]
 B --> C[Tratamento dos dados]
 C --> D[Cálculo das emissões<br/>de poluentes<br/>e da distância percorrida<br/>por ônibus]
 D --> E[Agregação dos dados<br/>por distrito]
 E --> F[Visualização dos dados]
-F --> G[Elaboração do dashboard<br/>interativo]""", height=540, width=170)
+F --> G[Elaboração do dashboard<br/>interativo]
+""", height=540, width=170)
  
     with st.expander("Fonte"):
         st.markdown("""<div style = 'text-align: justify; color: black;' >
@@ -349,7 +351,7 @@ with abas[2]:
  
 st.markdown("<br>", unsafe_allow_html=True)
  
- 
+
  
 # ----- MAPA TRAJETOS -----
 st.markdown("## Mapa de trajeto dos ônibus")
@@ -384,13 +386,13 @@ with col_center:
         map_placeholder.pydeck_chart(r, height=600)
         current_time += time_step
         time.sleep(frame_delay)
- 
- 
- 
+
+
+
 st.markdown('</div>', unsafe_allow_html=True)
- 
- 
- 
+
+
+
 # Footer
 st.markdown("""
 <div class="footer">
