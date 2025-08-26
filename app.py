@@ -4,7 +4,7 @@ import plotly.express as px
 import pydeck as pdk
 import time
 import numpy as np
-from streamlit_mermaid import st_mermaid
+import streamlit_mermaid as stmd
 from utils.load_csv import load_csv
 from utils.load_shp import load_shp
  
@@ -25,30 +25,37 @@ with st.sidebar:
                     </div> <br>""",
                 unsafe_allow_html=True)
  
-    #st.markdown("<h3 style='color: black;'>Metodologia</h3>", unsafe_allow_html=True)
-    with st.expander("Metodologia"):
-        st_mermaid("""
-%%{ init: {
-    'theme': 'base',
-    'themeVariables': {
-        'fontSize': '20px',
-        'primaryColor': '#F1EBDD'}}}%%
-                
-flowchart TD
-A[Extração dos limites<br/>administrativos<br/>dos distritos<br/>da cidade] --> B[Simulação dos dados<br/>da API do Olho Vivo]
-B --> C[Tratamento dos dados]
-C --> D[Cálculo das emissões<br/>de poluentes<br/>e da distância percorrida<br/>por ônibus]
-D --> E[Agregação dos dados<br/>por distrito]
-E --> F[Visualização dos dados]
-F --> G[Elaboração do dashboard<br/>interativo]
-""", height=540, width=170)
+    @st.dialog("Metodologia")
+    def metodologia():
+        columns = st.columns(2)
+        with columns[0]:
+            stmd.st_mermaid("""
+                        %%{ init: {
+                            'theme': 'base',
+                            'themeVariables': {
+                                'fontSize': '20px',
+                                'primaryColor': '#F1EBDD'}}}%%
+                                        
+                        flowchart TD
+                        A[Extração dos limites<br/>administrativos<br/>dos distritos<br/>da cidade] --> B[Simulação dos dados<br/>da API do Olho Vivo]
+                        B --> C[Tratamento dos dados]
+                        C --> D[Cálculo das emissões<br/>de poluentes<br/>e da distância percorrida<br/>por ônibus]
+                        D --> E[Agregação dos dados<br/>por distrito]
+                        E --> F[Visualização dos dados]
+                        F --> G[Elaboração do dashboard<br/>interativo]
+                        """, height=540, width=170)
+        with columns[1]:
+            st.markdown("escreva algo sobre a meotodlogia, fala que é tudo opensource sei lá.")
+
+    st.markdown("<h3 style='color: black;'>Metodologia</h3>", unsafe_allow_html=True)
+    if st.button("Acessar"):
+        metodologia()
  
     with st.expander("Fonte"):
         st.markdown("""<div style = 'text-align: justify; color: black;' >
                     SPTrans - API do Olho Vivo, 2025.
                     </div> <br>""",
                     unsafe_allow_html=True)
- 
  
  
 # CSS para Header e Footer
@@ -95,6 +102,13 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
  
+# Footer
+st.markdown("""
+<div class="footer">
+    <img src="https://prefeitura.sp.gov.br/documents/34276/25188012/logo_PrefSP__horizontal_fundo+claro+%281%29.png">
+    Copyleft 2025 | Prefeitura de São Paulo © 2025
+</div>
+""", unsafe_allow_html=True)
  
  
 # Header
@@ -393,10 +407,3 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 
 
-# Footer
-st.markdown("""
-<div class="footer">
-    <img src="https://prefeitura.sp.gov.br/documents/34276/25188012/logo_PrefSP__horizontal_fundo+claro+%281%29.png">
-    Copyleft 2025 | Prefeitura de São Paulo © 2025
-</div>
-""", unsafe_allow_html=True)
