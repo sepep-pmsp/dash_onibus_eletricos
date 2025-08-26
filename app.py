@@ -22,7 +22,7 @@ with st.sidebar:
     st.markdown("""<div style = 'text-align: justify; color: black;' >
                     Este dashboard faz parte do projeto da Prefeitura Municipal de São Paulo com a Bloomberg.
                     As visualizações apresentam informações sobre o transporte público a ônibus como frotas, trajetos e emissões de poluentes.
-                    </div> <br>""",
+                    </div><br>""",
                 unsafe_allow_html=True)
  
     @st.dialog("Metodologia")
@@ -45,19 +45,30 @@ with st.sidebar:
                         F --> G[Elaboração do dashboard<br/>interativo]
                         """, height=540, width=170)
         with columns[1]:
-            st.markdown("escreva algo sobre a meotodlogia, fala que é tudo opensource sei lá.")
+            st.markdown("A metodologia do projeto foi organizada em etapas sequenciais, " \
+                        "da extração dos limites administrativos dos distritos até a construção " \
+                        "de um dashboard interativo em Streamlit. Os dados da API Olho Vivo foram simulados, " \
+                        "tratados e estruturados em Python, com uso de Pandas para manipulação, " \
+                        "GeoPandas para integração espacial e Matplotlib/Plotly para visualizações gráficas e mapas. " \
+                        "Após processos de limpeza, agregação, cruzamento com bases geoespaciais e cálculo de indicadores, " \
+                        "estimaram-se emissões de poluentes e distâncias percorridas por ônibus, organizadas por distrito. " \
+                        "Todo o fluxo utilizou ferramentas open source, garantindo " \
+                        "transparência, reprodutibilidade e livre acesso.")
 
     st.markdown("<h3 style='color: black;'>Metodologia</h3>", unsafe_allow_html=True)
     if st.button("Acessar"):
         metodologia()
+
+    st.markdown("<br>", unsafe_allow_html=True)
  
     with st.expander("Fonte"):
         st.markdown("""<div style = 'text-align: justify; color: black;' >
-                    SPTrans - API do Olho Vivo, 2025.
+                    SPTrans - API Olho Vivo, 2025.
                     </div> <br>""",
                     unsafe_allow_html=True)
  
  
+
 # CSS para Header e Footer
 st.markdown("""
 <style>
@@ -102,13 +113,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
  
-# Footer
-st.markdown("""
-<div class="footer">
-    <img src="https://prefeitura.sp.gov.br/documents/34276/25188012/logo_PrefSP__horizontal_fundo+claro+%281%29.png">
-    Copyleft 2025 | Prefeitura de São Paulo © 2025
-</div>
-""", unsafe_allow_html=True)
  
  
 # Header
@@ -116,6 +120,16 @@ st.markdown("""
 <div class="custom-header">
     <h1 style='color: black; margin: 0;'>Dashboard - Protótipo</h1>
     <p style='font-size: 1.5rem; color: black; margin: 0;'>PMSP / Bloomberg</p>
+</div>
+""", unsafe_allow_html=True)
+
+
+
+# Footer
+st.markdown("""
+<div class="footer">
+    <img src="https://prefeitura.sp.gov.br/documents/34276/25188012/logo_PrefSP__horizontal_fundo+claro+%281%29.png">
+    Copyleft 2025 | Prefeitura de São Paulo © 2025
 </div>
 """, unsafe_allow_html=True)
  
@@ -404,6 +418,3 @@ with col_center:
 
 
 st.markdown('</div>', unsafe_allow_html=True)
-
-
-
