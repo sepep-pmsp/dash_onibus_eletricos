@@ -45,15 +45,20 @@ with st.sidebar:
                         F --> G[Elaboração do dashboard<br/>interativo]
                         """, height=540, width=170)
         with columns[1]:
-            st.markdown("A metodologia do projeto foi organizada em etapas sequenciais, " \
-                        "da extração dos limites administrativos dos distritos até a construção " \
-                        "de um dashboard interativo em Streamlit. Os dados da API Olho Vivo foram simulados, " \
-                        "tratados e estruturados em Python, com uso de Pandas para manipulação, " \
-                        "GeoPandas para integração espacial e Matplotlib/Plotly para visualizações gráficas e mapas. " \
-                        "Após processos de limpeza, agregação, cruzamento com bases geoespaciais e cálculo de indicadores, " \
-                        "estimaram-se emissões de poluentes e distâncias percorridas por ônibus, organizadas por distrito. " \
-                        "Todo o fluxo utilizou ferramentas open source, garantindo " \
-                        "transparência, reprodutibilidade e livre acesso.")
+            st.markdown(
+            """<div style='text-align: justify; color: black;'>
+            A metodologia do projeto foi organizada em etapas sequenciais,
+            da extração dos limites administrativos dos distritos até a construção
+            do dashboard interativo em Streamlit. Os dados da API do Olho Vivo foram extraídos,
+            tratados e estruturados em Python, com uso das bibliotecas para manipulação e visualizações.
+            Após processos de limpeza, agregação, cruzamento e cálculo de indicadores,
+            estimaram-se emissões de poluentes e distâncias percorridas por ônibus, organizadas por distrito.
+            Todo o fluxo utilizou ferramentas open source, garantindo
+            transparência, reprodutibilidade e livre acesso no projeto.
+            </div>""",
+            unsafe_allow_html=True
+        )
+
 
     st.markdown("<h3 style='color: black;'>Metodologia</h3>", unsafe_allow_html=True)
     if st.button("Acessar"):
@@ -63,7 +68,7 @@ with st.sidebar:
  
     with st.expander("Fonte"):
         st.markdown("""<div style = 'text-align: justify; color: black;' >
-                    SPTrans - API Olho Vivo, 2025.
+                    SPTrans - API do Olho Vivo, 2025.
                     </div> <br>""",
                     unsafe_allow_html=True)
  
@@ -158,16 +163,18 @@ df_final, df_trips, distritos_final = carregar_dados()
  
 # ----- GRÁFICOS 1 -----
 st.markdown("## Sobre os ônibus")
- 
- 
+
+
+df_unique = df_final.drop_duplicates(subset="id_onibus")
+
+
 # Tipo de ônibus
-df_final["eletrico"] = df_final["eletrico"].astype(bool)
-contagem_eletrico = df_final["eletrico"].value_counts().reset_index()
+contagem_eletrico = df_unique["is_eletrico"].value_counts().reset_index()
 contagem_eletrico.columns = ["Tipo de ônibus", "Quantidade"]
 mapeamento = {False: "Não elétrico", True: "Elétrico"}
 contagem_eletrico["Tipo de ônibus"] = contagem_eletrico["Tipo de ônibus"].map(mapeamento)
-total_onibus = df_final["id_onibus"].nunique()
- 
+total_onibus = df_unique["id_onibus"].nunique()
+
 fig1 = px.pie(
     contagem_eletrico,
     values="Quantidade",
@@ -181,17 +188,25 @@ fig1 = px.pie(
     hole=0.5
 )
 fig1.update_traces(textinfo="none", hovertemplate="%{percent}")
-fig1.add_annotation(text=f"<b>Total:<br>{total_onibus}</b>", x=0.5, y=0.5, font=dict(size=20, color="black"), showarrow=False)
-fig1.update_layout(legend=dict(orientation="v", font=dict(size=14, color = "black"), yanchor="middle", y=0.5, xanchor="left", x=1.05),
-                   hoverlabel=dict(font=dict(color="black"), bgcolor="white"))
- 
- 
-# Modelo de ônibus
-onibus_eletricos = df_final[df_final["eletrico"]]
+fig1.add_annotation(
+    text=f"<b>Total:<br>{total_onibus}</b>",
+    x=0.5, y=0.5,
+    font=dict(size=20, color="black"),
+    showarrow=False
+)
+fig1.update_layout(
+    legend=dict(orientation="v", font=dict(size=14, color="black"),
+                yanchor="middle", y=0.5, xanchor="left", x=1.05),
+    hoverlabel=dict(font=dict(color="black"), bgcolor="white")
+)
+
+
+# Modelos de ônibus elétricos
+onibus_eletricos = df_unique[df_unique["is_eletrico"] == True]
 contagem_modelo = onibus_eletricos["modelo"].value_counts().reset_index()
 contagem_modelo.columns = ["Modelo de ônibus", "Quantidade"]
 total_onibus_eletricos = onibus_eletricos["id_onibus"].nunique()
- 
+
 fig2 = px.pie(
     contagem_modelo,
     values="Quantidade",
@@ -201,10 +216,19 @@ fig2 = px.pie(
     color_discrete_sequence=px.colors.qualitative.Plotly
 )
 fig2.update_traces(textinfo="none", hovertemplate="%{percent}")
-fig2.add_annotation(text=f"<b>Total:<br>{total_onibus_eletricos}</b>", x=0.5, y=0.5, font=dict(size=20, color="black"), showarrow=False)
-fig2.update_layout(legend=dict(orientation="v", font=dict(size=14, color = "black"), yanchor="middle", y=0.5, xanchor="left", x=1.15),
-                   hoverlabel=dict(font=dict(color="black"), bgcolor="white"))
- 
+fig2.add_annotation(
+    text=f"<b>Total:<br>{total_onibus_eletricos}</b>",
+    x=0.5, y=0.5,
+    font=dict(size=20, color="black"),
+    showarrow=False
+)
+fig2.update_layout(
+    legend=dict(orientation="v", font=dict(size=14, color="black"),
+                yanchor="middle", y=0.5, xanchor="left", x=1.15),
+    hoverlabel=dict(font=dict(color="black"), bgcolor="white")
+)
+
+
 with st.expander("Clique para as visualizações"):
     col1, col2 = st.columns(2)
     col1.plotly_chart(fig1, use_container_width=True)
@@ -220,8 +244,8 @@ st.markdown("<br>", unsafe_allow_html=True)
 st.markdown("## Sobre as emissões de CO₂")
 df_final["momento_inicial"] = pd.to_datetime(df_final["momento_inicial"])
 df_final["hora_min"] = df_final["momento_inicial"].dt.strftime("%H:%M")
-df_eletricos = df_final[df_final["eletrico"] == True]
-df_nao_eletricos = df_final[df_final["eletrico"] == False]
+df_eletricos = df_final[df_final["is_eletrico"] == True]
+df_nao_eletricos = df_final[df_final["is_eletrico"] == False]
  
 emissoes = df_nao_eletricos.groupby("hora_min")["emissao_co2"].sum().cumsum().sort_index().reset_index()
 emissoes.columns = ["Horário do dia", "Emissões de CO₂ (?)"]
@@ -264,13 +288,13 @@ st.markdown("<br>", unsafe_allow_html=True)
 st.markdown("## Mapas coropléticos por distrito")
  
 distritos_final["emissao_nao_eletricos"] = np.where(
-    distritos_final["eletrico"] == "False",
+    distritos_final["is_eletric"] == False,
     distritos_final["emissao_co"],
     0
 )
  
 distritos_final["emissao_eletricos"] = np.where(
-    distritos_final["eletrico"] == "True",
+    distritos_final["is_eletric"] == True,
     distritos_final["emissao_co"],
     0
 )
