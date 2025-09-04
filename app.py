@@ -434,7 +434,7 @@ with col_center:
             trail_length=trail_length,
             current_time=current_time,
         )
-        view_state = pdk.ViewState(latitude=-23.6, longitude=-46.63, zoom=11, pitch=45)
+        view_state = pdk.ViewState(latitude=-23.7, longitude=-46.63, zoom=10, pitch=45)
         r = pdk.Deck(layers=[trips_layer], initial_view_state=view_state)
         map_placeholder.pydeck_chart(r, height=600)
         current_time += time_step
