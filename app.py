@@ -109,6 +109,7 @@ st.markdown("""
         padding: 10px;
         font-size: medium;
         box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        z-index: 1000;
     }
     .footer img {
         height: 30px;
