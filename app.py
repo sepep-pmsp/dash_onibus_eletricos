@@ -37,7 +37,7 @@ with st.sidebar:
                                 'primaryColor': '#F1EBDD'}}}%%
                                         
                         flowchart TD
-                        A[Extração dos limites<br/>administrativos<br/>dos distritos<br/>da cidade] --> B[Simulação dos dados<br/>da API do Olho Vivo]
+                        A[Extração dos limites<br/>administrativos<br/>dos distritos<br/>da cidade] --> B[Extração dos dados<br/>da API do Olho Vivo]
                         B --> C[Tratamento dos dados]
                         C --> D[Cálculo das emissões<br/>de poluentes<br/>e da distância percorrida<br/>por ônibus]
                         D --> E[Agregação dos dados<br/>por distrito]
@@ -50,7 +50,7 @@ with st.sidebar:
             A metodologia do projeto foi organizada em etapas sequenciais,
             da extração dos limites administrativos dos distritos até a construção
             do dashboard interativo em Streamlit. Os dados da API do Olho Vivo foram extraídos,
-            tratados e estruturados em Python, com uso das bibliotecas para manipulação e visualizações.
+            tratados e estruturados em Python, com uso das bibliotecas para manipulação e visualização de dados.
             Após processos de limpeza, agregação, cruzamento e cálculo de indicadores,
             estimaram-se emissões de poluentes e distâncias percorridas por ônibus, organizadas por distrito.
             Todo o fluxo utilizou ferramentas open source, garantindo
